@@ -8,7 +8,7 @@ const Loader = () => {
       style={{
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        marginTop: 20,
       }}>
       <ActivityIndicator size="large" color={AppColors.Green} />
     </View>

@@ -1,13 +1,13 @@
 import axios from 'axios';
-import {createContext, useContext, useState} from 'react';
+import {createContext, useContext, useEffect, useState} from 'react';
 import {ProfileOptions} from '../utils/apiOptions';
 
 export const ProfileContext = createContext();
 
 export const ProfileProvider = ({children}) => {
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [proLoading, setProLoading] = useState(true);
+  const [proError, setProError] = useState(null);
 
   const getProfile = async () => {
     try {
@@ -20,16 +20,23 @@ export const ProfileProvider = ({children}) => {
         name: response.data.name,
         playlist: response.data.public_playlists,
       };
-      console.log(response);
 
       setProfile(userData);
     } catch (error) {
       console.log(error);
+      setProError(error.message);
+    } finally {
+      setProLoading(false);
     }
   };
 
+  useEffect(() => {
+    getProfile();
+  }, []);
+
   return (
-    <ProfileContext.Provider value={{loading, error, profile, getProfile}}>
+    <ProfileContext.Provider
+      value={{proLoading, proError, profile, getProfile}}>
       {children}
     </ProfileContext.Provider>
   );

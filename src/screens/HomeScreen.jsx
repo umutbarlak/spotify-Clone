@@ -26,7 +26,7 @@ import {useProfileContext} from '../context/ProfileContext';
 
 const HomeScreen = ({navigation}) => {
   const {albums, loading, error} = useAlbumContext();
-  const {profile} = useProfileContext();
+  const {profile, proLoading, proError} = useProfileContext();
   const {artists, loading: artLoading, error: artError} = useArtistContext();
 
   return (
@@ -38,25 +38,36 @@ const HomeScreen = ({navigation}) => {
           <Error error={error} />
         ) : (
           <ScrollView contentContainerStyle={{paddingBottom: 60}}>
-            <View style={styles.header}>
-              <Pressable
-                onPress={() => navigation.navigate(SCREENS.PROFİLE)}
-                style={{flexDirection: 'row', alignItems: 'center', gap: 20}}>
-                <Image
-                  style={styles.headerImage}
-                  source={{uri: profile?.image}}
-                />
-                <Text style={styles.headerText}>{profile?.name}</Text>
-              </Pressable>
-              <AntDesign
-                size={24}
-                name="clouddownloado"
-                color={AppColors.White}
-              />
-            </View>
+            {proLoading ? (
+              <Loader />
+            ) : (
+              profile && (
+                <View style={styles.header}>
+                  <Pressable
+                    onPress={() => navigation.navigate(SCREENS.PROFİLE)}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 20,
+                    }}>
+                    <Image
+                      style={styles.headerImage}
+                      source={{uri: profile?.image}}
+                    />
+                    <Text style={styles.headerText}>{profile?.name}</Text>
+                  </Pressable>
+                  <AntDesign
+                    size={24}
+                    name="clouddownloado"
+                    color={AppColors.White}
+                  />
+                </View>
+              )
+            )}
 
             <View style={{flexDirection: 'row', marginVertical: 20, gap: 10}}>
               <TouchableOpacity
+                onPress={() => navigation.navigate(SCREENS.SONGS)}
                 activeOpacity={0.9}
                 style={{
                   backgroundColor: AppColors.SoftBlack,
@@ -68,6 +79,9 @@ const HomeScreen = ({navigation}) => {
                 <Text style={styles.text}>Music</Text>
               </TouchableOpacity>
               <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(SCREENS.SONGS, {type: 'podcast'})
+                }
                 activeOpacity={0.9}
                 style={{
                   backgroundColor: AppColors.SoftBlack,

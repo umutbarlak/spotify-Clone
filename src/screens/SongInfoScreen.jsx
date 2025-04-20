@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Pressable,
@@ -34,89 +35,78 @@ const SongInfoScreen = () => {
     getOneAlbum(id);
   }, []);
 
-  console.log(albumSongs);
-
   return (
     <LinearGradient colors={['#040306', '#131624']} style={{flex: 1}}>
       <SafeAreaView style={{flex: 1}}>
-        {oneloading ? (
-          <Loader />
-        ) : oneerror ? (
-          <Error error={oneerror} />
-        ) : (
-          <FlatList
-            contentContainerStyle={{padding: 10, gap: 10}}
-            ListHeaderComponent={() => (
-              <>
-                <TouchableOpacity
-                  style={{padding: 10}}
-                  onPress={() => navigation.goBack()}>
-                  <MaterialIcons
-                    name="arrow-back-ios"
-                    size={32}
-                    color={AppColors.White}
-                  />
-                </TouchableOpacity>
+        <FlatList
+          contentContainerStyle={{padding: 10, gap: 10}}
+          ListHeaderComponent={() => (
+            <>
+              <TouchableOpacity
+                style={{padding: 10}}
+                onPress={() => navigation.goBack()}>
+                <MaterialIcons
+                  name="arrow-back-ios"
+                  size={32}
+                  color={AppColors.White}
+                />
+              </TouchableOpacity>
 
-                <View>
-                  <Image
-                    source={{uri: album.coverArt}}
-                    width={screenWidth}
-                    height={screenWidth / 2}
-                    style={{resizeMode: 'contain', borderRadius: 10}}
-                  />
-                </View>
+              <View>
+                <Image
+                  source={{uri: album.coverArt}}
+                  width={screenWidth}
+                  height={screenWidth / 2}
+                  style={{resizeMode: 'contain', borderRadius: 10}}
+                />
+              </View>
 
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    color: AppColors.White,
-                    fontSize: 22,
-                    fontWeight: 'bold',
-                    marginVertical: 10,
-                  }}>
-                  {album.name}
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: AppColors.White,
+                  fontSize: 22,
+                  fontWeight: 'bold',
+                  marginVertical: 10,
+                }}>
+                {album.name}
+              </Text>
+
+              <View>
+                <Text style={{color: AppColors.Gray, textAlign: 'center'}}>
+                  {album.artist.name}
                 </Text>
+              </View>
 
-                <View>
-                  <Text style={{color: AppColors.Gray, textAlign: 'center'}}>
-                    {album.artist.name}
-                  </Text>
-                </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: 10,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginVertical: 20,
+                }}>
+                <Pressable>
+                  <Feather name="download" size={32} color={AppColors.Green} />
+                </Pressable>
 
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    gap: 10,
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginVertical: 20,
-                  }}>
-                  <Pressable>
-                    <Feather
-                      name="download"
-                      size={32}
-                      color={AppColors.Green}
-                    />
-                  </Pressable>
+                <Pressable>
+                  <MaterialIcons
+                    name="playlist-add"
+                    size={32}
+                    color={AppColors.Green}
+                  />
+                </Pressable>
+                <Pressable>
+                  <Feather
+                    name="play-circle"
+                    size={32}
+                    color={AppColors.Green}
+                  />
+                </Pressable>
+              </View>
 
-                  <Pressable>
-                    <MaterialIcons
-                      name="playlist-add"
-                      size={32}
-                      color={AppColors.Green}
-                    />
-                  </Pressable>
-                  <Pressable>
-                    <Feather
-                      name="play-circle"
-                      size={32}
-                      color={AppColors.Green}
-                    />
-                  </Pressable>
-                </View>
-
-                {/* <View>
+              {/* <View>
                 <View>
                   <View style={{gap: 10}}>
                     <Text
@@ -151,36 +141,36 @@ const SongInfoScreen = () => {
                   </View>
                 </View>
               </View> */}
-              </>
-            )}
-            data={albumSongs}
-            renderItem={({item}) => (
+            </>
+          )}
+          data={oneloading ? [] : albumSongs}
+          renderItem={({item}) => (
+            <View
+              style={{
+                padding: 15,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                borderWidth: 1,
+                borderColor: AppColors.SoftBlack,
+                borderRadius: 6,
+              }}>
               <View
-                style={{
-                  padding: 15,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  borderWidth: 1,
-                  borderColor: AppColors.SoftBlack,
-                  borderRadius: 6,
-                }}>
-                <View
-                  style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
-                  <Image
-                    source={{
-                      uri: `https://picsum.photos/seed/${item.name}/200/300`,
-                    }}
-                    width={50}
-                    height={50}
-                    style={{borderRadius: 6}}
-                  />
-                  <Text style={{color: AppColors.White}}>{item.songName}</Text>
-                  <Text style={{color: AppColors.White}}>({item.artist})</Text>
-                </View>
+                style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+                <Image
+                  source={{
+                    uri: `https://picsum.photos/seed/${item.songName}/200/300`,
+                  }}
+                  width={50}
+                  height={50}
+                  style={{borderRadius: 6}}
+                />
+                <Text style={{color: AppColors.White}}>{item.songName}</Text>
+                <Text style={{color: AppColors.White}}>({item.artist})</Text>
               </View>
-            )}
-          />
-        )}
+            </View>
+          )}
+          ListEmptyComponent={oneloading ? <Loader /> : null}
+        />
       </SafeAreaView>
     </LinearGradient>
   );

@@ -52,3 +52,18 @@ export const ProfileOptions = {
     'x-rapidapi-host': 'spotify23.p.rapidapi.com',
   },
 };
+
+export const SearchOptions = {
+  method: 'GET',
+  url: 'https://shazam.p.rapidapi.com/search',
+  params: {
+    term: 'türkiye',
+    locale: 'tr-TR',
+    offset: '0',
+    limit: '5',
+  },
+  headers: {
+    'x-rapidapi-key': '6ea5fbf78bmsh21609d7b9090444p18b688jsn3148f5a181dc',
+    'x-rapidapi-host': 'shazam.p.rapidapi.com',
+  },
+};

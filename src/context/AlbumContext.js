@@ -11,6 +11,7 @@ export const AlbumProvider = ({children}) => {
   const [error, setError] = useState(null);
   const [oneloading, setoneLoading] = useState(true);
   const [oneerror, setoneError] = useState(null);
+
   const getData = async () => {
     const options = AlbumOptions;
     try {
@@ -37,7 +38,7 @@ export const AlbumProvider = ({children}) => {
   };
 
   const getOneAlbum = async id => {
-    console.log(id);
+    setoneLoading(true);
     try {
       const options = OneAlbumOptions;
 
@@ -67,7 +68,15 @@ export const AlbumProvider = ({children}) => {
 
   return (
     <AlbumContext.Provider
-      value={{albums, albumSongs, loading, error, getOneAlbum}}>
+      value={{
+        albums,
+        albumSongs,
+        loading,
+        error,
+        getOneAlbum,
+        oneloading,
+        oneerror,
+      }}>
       {children}
     </AlbumContext.Provider>
   );
