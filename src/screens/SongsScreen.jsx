@@ -22,6 +22,7 @@ import {screenHight, screenWidth} from '../utils/screens';
 import TrackPlayer, {useProgress} from 'react-native-track-player';
 import Modal from 'react-native-modal';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 const SongsScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
@@ -32,6 +33,8 @@ const SongsScreen = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const progress = useProgress();
 
   const handleSearch = async () => {
     const options = SearchOptions;
@@ -74,13 +77,15 @@ const SongsScreen = ({navigation}) => {
   };
 
   const handlePlay = async track => {
-    const trackData = {
+    const formatedTarck = {
       id: track.key,
       url: track.hub.actions.find(action => action.type === 'uri').uri,
       title: track.title,
       artist: track.subtitle,
       artwork: track.images.coverart,
     };
+
+    const trackData = [formatedTarck];
     try {
       await TrackPlayer.reset();
       await TrackPlayer.add(trackData);
@@ -94,8 +99,37 @@ const SongsScreen = ({navigation}) => {
     }
   };
 
+  const formatTime = seconds => {
+    const mins = Math.floor(seconds / 60);
+
+    const secs = Math.floor(seconds % 60);
+
+    return `${mins < 10 ? '0' + mins : mins}:${secs < 10 ? '0' + secs : secs}`;
+  };
+
+  const seekBackward = async () => {
+    const position = await TrackPlayer.getPosition();
+
+    await TrackPlayer.seekTo(position - 10);
+  };
+  const seekForward = async () => {
+    const position = await TrackPlayer.getPosition();
+
+    await TrackPlayer.seekTo(position + 10);
+  };
+
+  const togglePlayback = async () => {
+    if (isPlaying) {
+      await TrackPlayer.pause();
+    } else {
+      await TrackPlayer.play();
+    }
+
+    setIsPlaying(!isPlaying);
+  };
+
   useEffect(() => {
-    // handleSearch();
+    handleSearch();
     setupPlayer();
   }, []);
 
@@ -195,36 +229,157 @@ const SongsScreen = ({navigation}) => {
             colors={['#3c3c3c', '#000000']}
             style={{
               height: screenHight,
-              marginTop: 120,
+              marginTop: 200,
               borderRadius: 20,
             }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: 20,
-              }}>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <AntDesign
-                  name="circledowno"
-                  size={32}
-                  color={AppColors.White}
-                />
-              </TouchableOpacity>
-
-              <Text style={{fontSize: 25, color: AppColors.White}}>
-                Track Player
-              </Text>
-            </View>
-
             <View style={{padding: 10}}>
-              <Image
-                source={{uri: selectedTrack.images['coverarthq' || 'coverart']}}
-                width={screenWidth - 60}
-                height={screenHight / 3}
-                style={{borderRadius: 10, resizeMode: 'cover'}}
-              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: 10,
+                }}>
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <AntDesign
+                    name="circledowno"
+                    size={32}
+                    color={AppColors.White}
+                  />
+                </TouchableOpacity>
+
+                <Text style={{fontSize: 25, color: AppColors.White}}>
+                  Track Player
+                </Text>
+              </View>
+
+              <View>
+                <Image
+                  source={{
+                    uri: selectedTrack?.images['coverarthq' || 'coverart'],
+                  }}
+                  width={screenWidth - 60}
+                  height={screenHight / 3}
+                  style={{borderRadius: 20, resizeMode: 'cover'}}
+                />
+              </View>
+
+              <View style={{marginVertical: 10, gap: 5}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <Text
+                    style={{
+                      color: AppColors.White,
+                      fontSize: 22,
+                      fontWeight: '700',
+                    }}>
+                    {selectedTrack?.title}
+                  </Text>
+                  <Entypo name="heart" size={32} color={AppColors.White} />
+                </View>
+                <Text
+                  style={{
+                    color: AppColors.DarkGray,
+                    fontSize: 18,
+                    fontWeight: '500',
+                  }}>
+                  {selectedTrack?.subtitle}
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: 'blue',
+                  position: 'relative',
+                }}>
+                <View
+                  style={{
+                    width: '100%',
+                    height: 3,
+                    backgroundColor: AppColors.Gray,
+                    borderRadius: 10,
+                  }}>
+                  <View
+                    style={{
+                      width:
+                        `${(progress.position / progress.duration) * 100}%` ||
+                        0,
+                      height: 3,
+                      backgroundColor: AppColors.Green,
+                      borderRadius: 10,
+                    }}
+                  />
+                </View>
+                <View
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 20,
+                    backgroundColor: AppColors.Green,
+                    position: 'absolute',
+                    top: -4,
+                    left: `${
+                      (progress.position / progress.duration - 0.02) * 100
+                    }%`,
+                  }}
+                />
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginVertical: 12,
+                }}>
+                <Text style={{color: AppColors.White, fontSize: 15}}>
+                  {formatTime(progress.position)}
+                </Text>
+                <Text style={{color: AppColors.White, fontSize: 15}}>
+                  {formatTime(progress.duration)}
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-around',
+                  alignItems: 'center',
+                }}>
+                <TouchableOpacity onPress={seekBackward} activeOpacity={0.8}>
+                  <MaterialIcons
+                    name="replay-10"
+                    size={30}
+                    color={AppColors.White}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={togglePlayback} activeOpacity={0.8}>
+                  {!isPlaying ? (
+                    <AntDesign
+                      name="playcircleo"
+                      size={50}
+                      color={AppColors.White}
+                    />
+                  ) : (
+                    <AntDesign
+                      name="pausecircleo"
+                      size={50}
+                      color={AppColors.White}
+                    />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity onPress={seekForward} activeOpacity={0.8}>
+                  <MaterialIcons
+                    name="forward-10"
+                    size={30}
+                    color={AppColors.White}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
           </LinearGradient>
         </Modal>
